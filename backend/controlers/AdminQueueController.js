@@ -146,22 +146,25 @@ exports.getCurrentQueue = async (req, res) => {
   try {
     const { location_id, service_id } = req.params;
 
-    // Ambil antrean terakhir yang statusnya "called" di lokasi dan layanan yang dipilih
-    const lastCalledQueue = await Queue.findOne({
+    // Ambil antrean yang sudah dipanggil hari ini, urutkan descending
+    const calledQueues = await Queue.find({
       location_id,
       service_id,
       status: 'called'
-    }).sort({ queue_number: -1 }); // Urutkan secara menurun berdasarkan nomor antrean
+    }).sort({ queue_number: -1 }); // Urutkan dari terbesar ke terkecil
 
-    if (!lastCalledQueue) {
-      return res.status(404).json({ message: 'No called queue found.' });
+    if (!calledQueues || calledQueues.length < 2) {
+      return res.status(404).json({ message: 'No previous called queue available.' });
     }
 
+    // Ambil antrean sebelumnya (urutan kedua)
+    const previousQueue = calledQueues[1];
+
     res.status(200).json({
-      message: 'Last called queue fetched successfully',
-      queue_date: lastCalledQueue.queue_date,
-      queueCode: lastCalledQueue.queue_code,
-      status: lastCalledQueue.status
+      message: 'Previous called queue fetched successfully',
+      queue_date: previousQueue.queue_date,
+      queueCode: previousQueue.queue_code,
+      status: previousQueue.status
     });
   } catch (error) {
     res.status(500).json({ message: 'Internal server error', error });

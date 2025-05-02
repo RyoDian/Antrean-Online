@@ -2,6 +2,13 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import swal from "sweetalert";
 
+// Fungsi untuk mengucapkan teks
+const speak = (text) => {
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "id-ID"; // Bahasa Indonesia
+  speechSynthesis.speak(utterance);
+};
+
 const AdminQueuePage = () => {
   const [locationId, setLocationId] = useState("");
   const [locations, setLocations] = useState([]);
@@ -11,11 +18,9 @@ const AdminQueuePage = () => {
   const [currentQueue, setCurrentQueue] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Fetch locations and services once on mount
   useEffect(() => {
     const fetchData = async () => {
       try {
-        
         const [locationResponse, serviceResponse] = await Promise.all([
           axios.get("/api/location", { withCredentials: true }),
           axios.get("/api/service", { withCredentials: true }),
@@ -30,7 +35,6 @@ const AdminQueuePage = () => {
     fetchData();
   }, []);
 
-  // Fetch the last called queues when location or services change
   const fetchLastCalledQueues = async () => {
     if (!locationId) return;
 
@@ -54,14 +58,6 @@ const AdminQueuePage = () => {
     fetchLastCalledQueues();
   }, [locationId, services]);
 
-  // Reset current queue and fetch new data when the selected service changes
-  // useEffect(() => {
-  //   setCurrentQueue(null);
-  //   if (serviceId) {
-  //     getCurrentQueue();
-  //   }
-  // }, [serviceId]);
-
   const callNextQueue = async () => {
     if (!locationId || !serviceId) {
       swal("Error", "Please select a location and a service!", "error");
@@ -74,12 +70,20 @@ const AdminQueuePage = () => {
         {},
         { withCredentials: true }
       );
+
+      const queueCode = response.data.kode;
+      const message = `Nomor antrean ${queueCode}, silakan menuju loket.`;
+      speak(message);
+
       swal("Success", response.data.message, "success");
+
       setCurrentQueue({
         date: response.data.date,
         code: response.data.kode,
         status: response.data.status,
+        _id: response.data._id,
       });
+
       await fetchLastCalledQueues();
     } catch (error) {
       swal(
@@ -155,11 +159,15 @@ const AdminQueuePage = () => {
         `/api/adminq/current/${locationId}/${serviceId}`,
         { withCredentials: true }
       );
+      const queueCode = response.data.queueCode;
+      const message = `Nomor antrean ${queueCode}, silakan menuju loket.`;
+      speak(message);
       swal("Success", "Current queue details fetched.", "success");
       setCurrentQueue({
         date: response.data.queue_date,
         code: response.data.queueCode,
         status: response.data.status,
+        _id: response.data._id,
       });
     } catch (error) {
       swal(
@@ -173,7 +181,7 @@ const AdminQueuePage = () => {
   };
 
   return (
-    <div className=" mx-8 my-12 bg-blue-100 px-4 lg:px-14 py-8 rounded-xl shadow">
+    <div className="mx-8 my-12 bg-blue-100 px-4 lg:px-14 py-8 rounded-xl shadow">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         {serviceQueues.map((serviceQueue, index) => (
           <div key={index} className="p-4 bg-gray-100 rounded-lg shadow">
@@ -191,7 +199,7 @@ const AdminQueuePage = () => {
       </div>
 
       <h1 className="font-bold text-lg my-5 text-center">Admin Queue Management</h1>
-      
+
       <div className="mb-5">
         <label className="font-bold text-slate-700">Select Location</label>
         <select

@@ -61,14 +61,14 @@ exports.createQueue = async (req, res) => {
     }
 
     // // Check if the user already has a queue for the same date, location, and service
-    const existingQueue = await Queue.findOne({
-      service_id: service._id,
-      user_id: req.user._id,
-    });
+    // const existingQueue = await Queue.findOne({
+    //   service_id: service._id,
+    //   user_id: req.user._id,
+    // });
 
-    if (existingQueue) {
-      return res.status(400).json({ message: 'User already has a queue for this location and date.' });
-    }
+    // if (existingQueue) {
+    //   return res.status(400).json({ message: 'User already has a queue for this location and date.' });
+    // }
 
     // Determine the next queue number for this location, service, and date
     const nextQueueNumber = await getNextQueueNumber(location_id, service._id, bookingDate);
@@ -109,7 +109,7 @@ exports.getQueueByID = async (req, res) => {
     return res.status(400).json({message:'id tidak valid'})
   }
   try {
-    const response = await Queue.find({user_id:id, status:'waiting'}); // Cari antrean berdasarkan ID
+    const response = await Queue.find({user_id:id}); // Cari antrean berdasarkan ID
     
     if (!response) {
       return res.status(404).json({ message: 'Antrean tidak ditemukan. Silakan mengambil antrean.' });
