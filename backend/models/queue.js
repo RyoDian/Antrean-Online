@@ -26,6 +26,10 @@ const QueueSchema = new Schema({
     ref: 'User',       // Referensi ke pengguna yang mendaftar antrean
     required: true
   },
+    user_name: {
+    type: String,      // Referensi ke pengguna yang mendaftar antrean
+    required: true
+  },
   status: {
     type: String,
     enum: ['waiting', 'completed', 'canceled'], // Status antrean

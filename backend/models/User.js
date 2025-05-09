@@ -6,6 +6,7 @@ const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  nik: { type: Number , default: 1234567891011123 , required:true , unique: true },
   role: { type: String, enum: ["user", "admin", "super-admin"], default: "user" },
   location: {
     type: Schema.Types.ObjectId,

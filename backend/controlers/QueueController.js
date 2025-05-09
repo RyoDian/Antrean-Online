@@ -1,7 +1,9 @@
 const Queue = require('../models/queue');
+const User = require('../models/User');
 const Location = require('../models/location');
 const Service = require('../models/Service');
 const { default: mongoose } = require('mongoose');
+const queue = require('../models/queue');
 
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
@@ -9,7 +11,7 @@ exports.createQueue = async (req, res) => {
   try {
     const { code, queue_date } = req.body;
     const { location_id } = req.params;
-
+   
     // Validate queue_date input
     if (!queue_date || isNaN(new Date(queue_date))) {
       return res.status(400).json({ message: 'Invalid queue date provided.' });
@@ -55,10 +57,13 @@ exports.createQueue = async (req, res) => {
       return res.status(404).json({ message: 'Invalid service code.' });
     }
 
+
     // Ensure req.user._id exists
     if (!req.user || !req.user._id) {
       return res.status(400).json({ message: 'User ID is required to create a queue.' });
     }
+
+    const UserName = req.user.name;
 
     // // Check if the user already has a queue for the same date, location, and service
     // const existingQueue = await Queue.findOne({
@@ -79,6 +84,7 @@ exports.createQueue = async (req, res) => {
     // Create a new queue entry
     const newQueue = new Queue({
       location_id,
+      user_name: UserName,
       service_id: service._id,
       queue_number: nextQueueNumber,
       queue_code: queueCode,
@@ -121,3 +127,17 @@ exports.getQueueByID = async (req, res) => {
   }
 };
 
+exports.getAllQueues = async (req, res) => {
+  try {
+    const queues = await Queue.find()
+      .populate('user_id', 'name nik') // ⬅️ Ambil nama & nik dari koleksi User
+      .populate('location_id', 'name')
+      .populate('service_id', 'name code')
+      .sort({ queue_date: -1 });
+
+    res.status(200).json({ data: queues });
+  } catch (error) {
+    console.error("Error getting queues:", error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};

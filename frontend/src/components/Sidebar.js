@@ -68,6 +68,15 @@ const Sidebar = () => {
             </NavLink>
           </li>
           <li className="mb-6">
+            <NavLink
+              to="/allQueue"
+              className="p-2 hover:bg-gray-700 flex gap-2 items-center"
+            >
+              <IoBag />
+              History Antrian
+            </NavLink>
+          </li>
+          <li className="mb-6">
             <button
               onClick={logout}
               className="block p-2 hover:bg-gray-700 flex gap-2 items-center"

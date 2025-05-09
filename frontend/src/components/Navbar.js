@@ -26,6 +26,8 @@ const Navbar = () => {
   {/* Menu - tengah */}
   <div className="flex gap-8 justify-center items-center text-white">
     {user && user.role === 'admin' && <Link to="/A-Dashboard">Manage Queues</Link>}
+    {user && user.role === 'admin' && <Link to="/allQueue">History</Link>}
+    {user && user.role === 'super-admin' && <Link to="/allQueue">History</Link>}
     {user && user.role === 'super-admin' && <Link to="/S-Dashboard">Dashboard</Link>}
     {user && user.role === 'user' && <Link to="/dashboard">Home</Link>}
     {user && user.role === 'user' && <Link to="/queue">My Queue</Link>}

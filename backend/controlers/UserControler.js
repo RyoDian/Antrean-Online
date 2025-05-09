@@ -11,11 +11,11 @@ const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 //Register User
 exports.registerUser = async (req, res) => {
-  const { name, email, password, phone, } = req.body;
+  const { name, email, password, phone,nik} = req.body;
 
   try {
     // Validasi Input
-    if (!name || !email || !password) {
+    if (!name || !email || !password ||!nik ) {
       return res.status(400).json({ message: 'Name, email, and password are required' });
     }
 
@@ -24,6 +24,9 @@ exports.registerUser = async (req, res) => {
     }
 
     if (password.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
+    if (nik.length < 16) {
       return res.status(400).json({ message: 'Password must be at least 6 characters' });
     }
 
@@ -45,6 +48,7 @@ exports.registerUser = async (req, res) => {
       password,
       phone,
       role: 'user',
+      nik,
     });
 
     await newUser.save();
@@ -56,6 +60,7 @@ exports.registerUser = async (req, res) => {
         name: newUser.name,
         email: newUser.email,
         role: newUser.role,
+        nik:newUser.nik
       },
     });
   } catch (error) {
@@ -76,7 +81,7 @@ exports.loginUser = async (req, res) => {
 
     }
 
-   const token = generateJwt(user.id, user.role, user.location, user.name);
+   const token = generateJwt(user.id, user.role, user.location, user.name,user.nik);
 
     res.cookie('token', token, {
       httpOnly: true,
@@ -90,6 +95,7 @@ exports.loginUser = async (req, res) => {
       name: user.name,
       email: user.email,
       role: user.role,
+      nik:user.nik
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -118,7 +124,8 @@ exports.loginStatus = async (req, res) => {
           name: verified.name, // Include user name
           email: verified.email, // Include user email
           role: verified.role, // Include user role
-          location:verified.location
+          location:verified.location,
+          nik:verified.nik
         },
       });
     } else {

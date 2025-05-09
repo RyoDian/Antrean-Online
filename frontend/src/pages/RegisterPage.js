@@ -9,6 +9,7 @@ const RegisterPage = () => {
     email: "",
     password: "",
     phone: "",
+    nik:""
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -50,6 +51,18 @@ const RegisterPage = () => {
           </div>
           <h2 className="text-center text-3xl font-extrabold text-blue-500">REGISTER</h2>
           <form className="space-y-6" onSubmit={handleSubmit}>
+                        <div>
+              <label htmlFor="nik" className="block text-sm font-medium text-gray-700">NIK</label>
+              <input
+                id="nik"
+                name="nik"
+                type="text"
+                required
+                value={formData.nik}
+                onChange={handleChange}
+                className="block w-full px-3 py-2 border rounded-md"
+              />
+            </div>
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
               <input

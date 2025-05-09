@@ -20,6 +20,8 @@ import AdminComPage from './pages/AdminComPage';
 import AddAdminPage from './pages/AddAdminPage';
 import EditAdminPage from './pages/EditAdminPage';
 import MyQueuePage from './pages/MyQueuePage';
+import AllQueue from './pages/allQueue';
+
 
 function App() {
   return (
@@ -41,6 +43,7 @@ function App() {
           {/* Admin Routes */}
           <Route element={<ProtectedRoute roles={['admin', 'super-admin']} />}>
             <Route path="/A-dashboard" element={<AdminQueuePage />} />
+            <Route path="/allQueue" element={<AllQueue />} />
           </Route>
 
           {/* Super Admin Routes */}
